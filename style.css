@@ -14,21 +14,21 @@
     --bg-tertiary: #1a1a24;
     --bg-card: #16161f;
     --bg-card-hover: #1e1e2a;
-    
+
     --text-primary: #ffffff;
     --text-secondary: #a0a0b0;
     --text-tertiary: #6b6b7b;
     --text-muted: #4a4a5a;
-    
+
     --border-color: #2a2a3a;
     --border-light: #3a3a4a;
-    
+
     /* Accent Colors */
     --accent: #3b82f6;
     --accent-light: #60a5fa;
     --accent-dark: #2563eb;
     --accent-glow: rgba(59, 130, 246, 0.3);
-    
+
     /* Status Colors */
     --success: #10b981;
     --success-light: #34d399;
@@ -38,22 +38,28 @@
     --danger-light: #f87171;
     --info: #06b6d4;
     --info-light: #22d3ee;
-    
+
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
     --gradient-success: linear-gradient(135deg, #10b981 0%, #34d399 100%);
     --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
     --gradient-info: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
-    --gradient-card: linear-gradient(145deg, var(--bg-card) 0%, var(--bg-tertiary) 100%);
-    
+    --gradient-card: linear-gradient(
+        145deg,
+        var(--bg-card) 0%,
+        var(--bg-tertiary) 100%
+    );
+
     /* Shadows */
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
     --shadow-glow: 0 0 20px var(--accent-glow);
-    
+
     /* Typography */
-    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-family:
+        "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        sans-serif;
     --font-size-xs: 0.75rem;
     --font-size-sm: 0.875rem;
     --font-size-base: 1rem;
@@ -62,7 +68,7 @@
     --font-size-2xl: 1.5rem;
     --font-size-3xl: 2rem;
     --font-size-4xl: 2.5rem;
-    
+
     /* Spacing */
     --spacing-xs: 0.25rem;
     --spacing-sm: 0.5rem;
@@ -70,19 +76,19 @@
     --spacing-lg: 1.5rem;
     --spacing-xl: 2rem;
     --spacing-2xl: 3rem;
-    
+
     /* Border Radius */
     --radius-sm: 6px;
     --radius-md: 10px;
     --radius-lg: 16px;
     --radius-xl: 24px;
     --radius-full: 9999px;
-    
+
     /* Transitions */
     --transition-fast: 0.15s ease;
     --transition-base: 0.25s ease;
     --transition-slow: 0.4s ease;
-    
+
     /* Layout */
     --sidebar-width: 70px;
     --sidebar-width-expanded: 240px;
@@ -96,20 +102,24 @@
     --bg-tertiary: #f1f5f9;
     --bg-card: #ffffff;
     --bg-card-hover: #f8fafc;
-    
+
     --text-primary: #0f172a;
     --text-secondary: #475569;
     --text-tertiary: #64748b;
     --text-muted: #94a3b8;
-    
+
     --border-color: #e2e8f0;
     --border-light: #cbd5e1;
-    
+
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
-    
-    --gradient-card: linear-gradient(145deg, var(--bg-card) 0%, var(--bg-tertiary) 100%);
+
+    --gradient-card: linear-gradient(
+        145deg,
+        var(--bg-card) 0%,
+        var(--bg-tertiary) 100%
+    );
 }
 
 /* Accent Color Variations */
@@ -149,7 +159,9 @@
    BASE STYLES & RESET
    ========================================= */
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -492,7 +504,7 @@ body {
 }
 
 .kpi-card::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -528,10 +540,18 @@ body {
     color: white;
 }
 
-.gradient-primary { background: var(--gradient-primary); }
-.gradient-success { background: var(--gradient-success); }
-.gradient-warning { background: var(--gradient-warning); }
-.gradient-info { background: var(--gradient-info); }
+.gradient-primary {
+    background: var(--gradient-primary);
+}
+.gradient-success {
+    background: var(--gradient-success);
+}
+.gradient-warning {
+    background: var(--gradient-warning);
+}
+.gradient-info {
+    background: var(--gradient-info);
+}
 
 .kpi-info {
     flex: 1;
@@ -571,9 +591,15 @@ body {
     font-size: 18px;
 }
 
-.kpi-trend.positive { color: var(--success); }
-.kpi-trend.negative { color: var(--danger); }
-.kpi-trend.neutral { color: var(--text-tertiary); }
+.kpi-trend.positive {
+    color: var(--success);
+}
+.kpi-trend.negative {
+    color: var(--danger);
+}
+.kpi-trend.neutral {
+    color: var(--text-tertiary);
+}
 
 /* =========================================
    CARDS
@@ -974,7 +1000,7 @@ body {
 }
 
 .data-table th::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: 0;
     left: 0;
@@ -1310,7 +1336,7 @@ body {
 }
 
 .checkbox-label input:checked + .checkmark::after {
-    content: '✓';
+    content: "✓";
     color: white;
     font-size: 12px;
     font-weight: bold;
@@ -1676,7 +1702,9 @@ body {
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .loading-text {
@@ -1775,7 +1803,7 @@ body {
     padding: var(--spacing-lg);
     border-radius: var(--radius-md);
     overflow-x: auto;
-    font-family: 'Consolas', 'Monaco', monospace;
+    font-family: "Consolas", "Monaco", monospace;
     font-size: var(--font-size-sm);
     color: var(--text-secondary);
     white-space: pre-wrap;
@@ -1854,10 +1882,22 @@ body {
     color: white;
 }
 
-.toast.success .toast-icon { background: var(--gradient-success); }
-.toast.error .toast-icon { background: linear-gradient(135deg, var(--danger) 0%, var(--danger-light) 100%); }
-.toast.warning .toast-icon { background: var(--gradient-warning); }
-.toast.info .toast-icon { background: var(--gradient-info); }
+.toast.success .toast-icon {
+    background: var(--gradient-success);
+}
+.toast.error .toast-icon {
+    background: linear-gradient(
+        135deg,
+        var(--danger) 0%,
+        var(--danger-light) 100%
+    );
+}
+.toast.warning .toast-icon {
+    background: var(--gradient-warning);
+}
+.toast.info .toast-icon {
+    background: var(--gradient-info);
+}
 
 .toast-content {
     flex: 1;
@@ -1905,70 +1945,70 @@ body {
     :root {
         --sidebar-width: 0;
     }
-    
+
     .sidebar {
         transform: translateX(-100%);
         width: var(--sidebar-width-expanded);
     }
-    
+
     .sidebar.open {
         transform: translateX(0);
     }
-    
+
     .main-content {
         margin-left: 0;
         padding: var(--spacing-md);
     }
-    
+
     .page-header {
         flex-direction: column;
     }
-    
+
     .header-actions {
         width: 100%;
     }
-    
+
     .header-actions .btn-action {
         flex: 1;
     }
-    
+
     .kpis-container {
         grid-template-columns: 1fr;
     }
-    
+
     .page-title {
         font-size: var(--font-size-2xl);
     }
-    
+
     .title-icon {
         font-size: 28px;
     }
-    
+
     .theme-toggle {
         top: var(--spacing-md);
         right: var(--spacing-md);
         width: 40px;
         height: 40px;
     }
-    
+
     .pagination-container {
         flex-direction: column;
         align-items: stretch;
     }
-    
+
     .pagination-controls {
         justify-content: center;
     }
-    
+
     .search-options {
         flex-direction: column;
     }
-    
+
     .config-item {
         flex-direction: column;
         align-items: flex-start;
     }
-    
+
     .config-select,
     .config-input {
         width: 100%;
@@ -1980,25 +2020,25 @@ body {
     .kpi-card {
         padding: var(--spacing-md);
     }
-    
+
     .kpi-icon-wrapper {
         width: 44px;
         height: 44px;
         min-width: 44px;
     }
-    
+
     .kpi-icon-wrapper .material-symbols-outlined {
         font-size: 22px;
     }
-    
+
     .kpi-value {
         font-size: var(--font-size-xl);
     }
-    
+
     .quick-access-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-    
+
     .modal-content {
         margin: var(--spacing-md);
         max-height: calc(100vh - var(--spacing-xl));
@@ -2017,11 +2057,11 @@ body {
     .table-filter-bar {
         display: none !important;
     }
-    
+
     .main-content {
         margin-left: 0;
     }
-    
+
     .data-table th,
     .data-table td {
         padding: 8px;
