@@ -13,6 +13,7 @@ let dadosFiltrados = []; // Dados filtrados da planilha atual
 let paginaAtual = 1;
 let itensPorPagina = 50;
 let ultimaAtualizacao = null;
+let filtrosPorColuna = {}; // Filtros individuais por coluna
 
 // Configurações padrão
 let configuracoes = {
@@ -305,8 +306,9 @@ function selecionarPlanilha(nome) {
         }
     });
     
-    // Limpar filtro
+    // Limpar filtros
     document.getElementById('table-filter').value = '';
+    filtrosPorColuna = {};
     
     // Carregar dados
     dadosFiltrados = [...dadosExcel[nome].dados];
@@ -351,6 +353,24 @@ function renderizarTabela() {
                 <tr>
                     <th class="row-number">#</th>
                     ${cabecalhos.map(col => `<th>${escapeHtml(col || '')}</th>`).join('')}
+                </tr>
+                <tr class="filter-row">
+                    <th class="row-number">
+                        <button class="btn-clear-filters" onclick="limparFiltrosColunas()" title="Limpar todos os filtros">
+                            <span class="material-symbols-outlined">filter_alt_off</span>
+                        </button>
+                    </th>
+                    ${cabecalhos.map((col, index) => `
+                        <th class="filter-cell">
+                            <input type="text" 
+                                   class="column-filter-input" 
+                                   placeholder="Filtrar..." 
+                                   data-column="${index}"
+                                   value="${escapeHtml(filtrosPorColuna[index] || '')}"
+                                   onkeyup="filtrarPorColuna(event, ${index})"
+                                   oninput="filtrarPorColunaDebounce(${index}, this.value)">
+                        </th>
+                    `).join('')}
                 </tr>
             </thead>
             <tbody>
@@ -471,29 +491,98 @@ function alterarTamanhoPagina() {
 // =========================================
 
 function filtrarTabelaAtual() {
-    const filtro = document.getElementById('table-filter').value.toLowerCase();
-    
     if (!planilhaAtual || !dadosExcel[planilhaAtual]) return;
     
-    const sheet = dadosExcel[planilhaAtual];
-    
-    if (!filtro) {
-        dadosFiltrados = [...sheet.dados];
-    } else {
-        dadosFiltrados = sheet.dados.filter(row => {
-            return row.some(cell => 
-                String(cell).toLowerCase().includes(filtro)
-            );
-        });
-    }
-    
-    paginaAtual = 1;
-    renderizarTabela();
+    // Usa a função unificada de filtros
+    aplicarFiltrosColunas();
 }
 
 function limparFiltroTabela() {
     document.getElementById('table-filter').value = '';
     filtrarTabelaAtual();
+}
+
+// =========================================
+// FILTRO POR COLUNA
+// =========================================
+
+let filtroDebounceTimer = null;
+
+function filtrarPorColuna(event, colIndex) {
+    // Se pressionar Enter, aplica o filtro imediatamente
+    if (event.key === 'Enter') {
+        clearTimeout(filtroDebounceTimer);
+        aplicarFiltrosColunas();
+    }
+}
+
+function filtrarPorColunaDebounce(colIndex, valor) {
+    // Atualizar valor do filtro
+    if (valor.trim()) {
+        filtrosPorColuna[colIndex] = valor;
+    } else {
+        delete filtrosPorColuna[colIndex];
+    }
+    
+    // Debounce para não filtrar a cada tecla
+    clearTimeout(filtroDebounceTimer);
+    filtroDebounceTimer = setTimeout(() => {
+        aplicarFiltrosColunas();
+    }, 300);
+}
+
+function aplicarFiltrosColunas() {
+    if (!planilhaAtual || !dadosExcel[planilhaAtual]) return;
+    
+    const sheet = dadosExcel[planilhaAtual];
+    const filtroGeral = document.getElementById('table-filter').value.toLowerCase();
+    
+    // Começar com todos os dados
+    dadosFiltrados = sheet.dados.filter(row => {
+        // Primeiro aplicar filtro geral (se houver)
+        if (filtroGeral) {
+            const matchGeral = row.some(cell => 
+                String(cell).toLowerCase().includes(filtroGeral)
+            );
+            if (!matchGeral) return false;
+        }
+        
+        // Depois aplicar filtros por coluna
+        for (const [colIndex, filtro] of Object.entries(filtrosPorColuna)) {
+            const valor = String(row[parseInt(colIndex)] || '').toLowerCase();
+            const filtroLower = filtro.toLowerCase();
+            
+            if (!valor.includes(filtroLower)) {
+                return false;
+            }
+        }
+        
+        return true;
+    });
+    
+    paginaAtual = 1;
+    renderizarTabela();
+    
+    // Restaurar foco no input ativo (se houver)
+    const activeElement = document.activeElement;
+    if (activeElement && activeElement.classList.contains('column-filter-input')) {
+        const colIndex = activeElement.dataset.column;
+        setTimeout(() => {
+            const input = document.querySelector(`.column-filter-input[data-column="${colIndex}"]`);
+            if (input) {
+                input.focus();
+                // Colocar cursor no final do texto
+                const len = input.value.length;
+                input.setSelectionRange(len, len);
+            }
+        }, 0);
+    }
+}
+
+function limparFiltrosColunas() {
+    filtrosPorColuna = {};
+    aplicarFiltrosColunas();
+    mostrarToast('info', 'Filtros limpos', 'Todos os filtros de coluna foram removidos.');
 }
 
 // =========================================

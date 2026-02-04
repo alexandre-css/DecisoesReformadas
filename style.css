@@ -1028,6 +1028,81 @@ body {
     font-weight: 500;
 }
 
+/* Column Filter Row */
+.data-table .filter-row {
+    background: var(--bg-secondary);
+}
+
+.data-table .filter-row th {
+    padding: var(--spacing-sm);
+    position: sticky;
+    top: 49px;
+    z-index: 9;
+    background: var(--bg-secondary);
+}
+
+.data-table .filter-row th::after {
+    display: none;
+}
+
+.data-table .filter-cell {
+    padding: var(--spacing-xs) var(--spacing-sm);
+}
+
+.column-filter-input {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-xs);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+    min-width: 80px;
+}
+
+.column-filter-input::placeholder {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.column-filter-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--bg-card);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.column-filter-input:not(:placeholder-shown) {
+    border-color: var(--accent);
+    background: var(--bg-card);
+}
+
+.btn-clear-filters {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-tertiary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-clear-filters:hover {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: white;
+}
+
+.btn-clear-filters .material-symbols-outlined {
+    font-size: 18px;
+}
+
 /* =========================================
    PAGINATION
    ========================================= */
