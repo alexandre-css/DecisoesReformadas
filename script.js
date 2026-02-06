@@ -31,7 +31,7 @@ let configuracoes = {
 // INICIALIZAÇÃO
 // =========================================
 
-const ARQUIVO_XLSX_URL = '/resultadoagrupado.xlsx';
+const ARQUIVO_XLSX_URL = "/resultadoagrupado.xlsx";
 
 document.addEventListener("DOMContentLoaded", function () {
     carregarConfiguracoes();
@@ -78,17 +78,20 @@ async function carregarArquivo() {
 
     try {
         const response = await fetch(ARQUIVO_XLSX_URL);
-        
+
         if (!response.ok) {
             throw new Error(`Erro ao carregar arquivo: ${response.status}`);
         }
-        
+
         const dados = await response.arrayBuffer();
         await processarDadosExcel(dados);
-        
     } catch (erro) {
         console.error("Erro ao carregar arquivo:", erro);
-        mostrarToast("error", "Erro", "Não foi possível carregar os dados do servidor.");
+        mostrarToast(
+            "error",
+            "Erro",
+            "Não foi possível carregar os dados do servidor.",
+        );
         esconderLoading();
     }
 }
