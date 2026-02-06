@@ -380,8 +380,8 @@ function renderizarTabela() {
     if (!colunasVisiveis[planilhaAtual]) {
         colunasVisiveis[planilhaAtual] = cabecalhos
             .map((col, i) => ({ col: col?.toLowerCase(), index: i }))
-            .filter(item => item.col !== "link_decisao")
-            .map(item => item.index);
+            .filter((item) => item.col !== "link_decisao")
+            .map((item) => item.index);
     }
     const cabecalhosVisiveis = colunasVisiveis[planilhaAtual];
 
@@ -444,16 +444,21 @@ function renderizarTabela() {
                         const valor =
                             row[colIndex] !== undefined ? row[colIndex] : "";
                         let valorStr = String(valor);
-                        const nomeColuna = (cabecalhos[colIndex] || "").toLowerCase();
+                        const nomeColuna = (
+                            cabecalhos[colIndex] || ""
+                        ).toLowerCase();
 
                         // Formatação especial para coluna data_decisao
                         let valorExibicao = valorStr;
                         if (nomeColuna === "data_decisao") {
                             valorExibicao = extrairData(valorStr);
                         }
-                        
+
                         // Coluna link_pdf_download: abre link diretamente
-                        if (nomeColuna === "link_pdf_download" && valorStr.trim()) {
+                        if (
+                            nomeColuna === "link_pdf_download" &&
+                            valorStr.trim()
+                        ) {
                             return `<td class="link-cell" 
                                    onclick="abrirLink('${escapeHtml(valorStr.trim()).replace(/'/g, "\\'")}')" 
                                    title="Clique para abrir o PDF">
@@ -952,14 +957,14 @@ function mostrarDetalhesCelulaIndex(index) {
 
 function abrirLink(url) {
     if (!url) return;
-    
+
     // Adiciona protocolo se não existir
     let urlFinal = url.trim();
-    if (!urlFinal.startsWith('http://') && !urlFinal.startsWith('https://')) {
-        urlFinal = 'https://' + urlFinal;
+    if (!urlFinal.startsWith("http://") && !urlFinal.startsWith("https://")) {
+        urlFinal = "https://" + urlFinal;
     }
-    
-    window.open(urlFinal, '_blank', 'noopener,noreferrer');
+
+    window.open(urlFinal, "_blank", "noopener,noreferrer");
 }
 
 function mostrarDetalhesCelula(valor, coluna) {
