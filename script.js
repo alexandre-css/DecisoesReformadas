@@ -11,9 +11,11 @@ let dadosExcel = {}; // Dados de todas as planilhas
 let planilhaAtual = null; // Nome da planilha atualmente selecionada
 let dadosFiltrados = []; // Dados filtrados da planilha atual
 let paginaAtual = 1;
-let itensPorPagina = 50;
+let itensPorPagina = "all"; // Mostrar todos os registros sem paginação
 let ultimaAtualizacao = null;
 let filtrosPorColuna = {}; // Filtros individuais por coluna
+let colunasVisiveis = {}; // Colunas visíveis por planilha
+let dadosCelulas = []; // Armazena dados das células para clique
 
 // Configurações padrão
 let configuracoes = {
@@ -374,18 +376,16 @@ function renderizarTabela() {
     const sheet = dadosExcel[planilhaAtual];
     const cabecalhos = sheet.cabecalhos;
 
-    // Calcular paginação
+    // Inicializar colunas visíveis (todas visíveis por padrão)
+    if (!colunasVisiveis[planilhaAtual]) {
+        colunasVisiveis[planilhaAtual] = cabecalhos.map((_, i) => i);
+    }
+    const cabecalhosVisiveis = colunasVisiveis[planilhaAtual];
+
+    // Mostrar todos os registros
     const totalRegistros = dadosFiltrados.length;
-    const totalPaginas =
-        itensPorPagina === "all"
-            ? 1
-            : Math.ceil(totalRegistros / itensPorPagina);
-    const inicio =
-        itensPorPagina === "all" ? 0 : (paginaAtual - 1) * itensPorPagina;
-    const fim =
-        itensPorPagina === "all"
-            ? totalRegistros
-            : Math.min(inicio + itensPorPagina, totalRegistros);
+    const inicio = 0;
+    const fim = totalRegistros;
     const dadosPagina = dadosFiltrados.slice(inicio, fim);
 
     // Gerar tabela
@@ -394,7 +394,7 @@ function renderizarTabela() {
             <thead>
                 <tr>
                     <th class="row-number">#</th>
-                    ${cabecalhos.map((col) => `<th>${escapeHtml(col || "")}</th>`).join("")}
+                    ${cabecalhosVisiveis.map((colIndex) => `<th>${escapeHtml(cabecalhos[colIndex] || "")}</th>`).join("")}
                 </tr>
                 <tr class="filter-row">
                     <th class="row-number">
@@ -402,17 +402,17 @@ function renderizarTabela() {
                             <span class="material-symbols-outlined">filter_alt_off</span>
                         </button>
                     </th>
-                    ${cabecalhos
+                    ${cabecalhosVisiveis
                         .map(
-                            (col, index) => `
+                            (colIndex) => `
                         <th class="filter-cell">
                             <input type="text" 
                                    class="column-filter-input" 
                                    placeholder="Filtrar..." 
-                                   data-column="${index}"
-                                   value="${escapeHtml(filtrosPorColuna[index] || "")}"
-                                   onkeyup="filtrarPorColuna(event, ${index})"
-                                   oninput="filtrarPorColunaDebounce(${index}, this.value)">
+                                   data-column="${colIndex}"
+                                   value="${escapeHtml(filtrosPorColuna[colIndex] || "")}"
+                                   onkeyup="filtrarPorColuna(event, ${colIndex})"
+                                   oninput="filtrarPorColunaDebounce(${colIndex}, this.value)">
                         </th>
                     `,
                         )
@@ -425,18 +425,19 @@ function renderizarTabela() {
     if (dadosPagina.length === 0) {
         html += `
             <tr>
-                <td colspan="${cabecalhos.length + 1}" style="text-align: center; padding: 40px; color: var(--text-tertiary);">
+                <td colspan="${cabecalhosVisiveis.length + 1}" style="text-align: center; padding: 40px; color: var(--text-tertiary);">
                     Nenhum registro encontrado
                 </td>
             </tr>
         `;
     } else {
+        dadosCelulas = []; // Limpar dados das células
         dadosPagina.forEach((row, index) => {
             const numeroLinha = inicio + index + 1;
             html += `<tr>
                 <td class="row-number">${numeroLinha}</td>
-                ${cabecalhos
-                    .map((_, colIndex) => {
+                ${cabecalhosVisiveis
+                    .map((colIndex) => {
                         const valor =
                             row[colIndex] !== undefined ? row[colIndex] : "";
                         const valorStr = String(valor);
@@ -446,8 +447,16 @@ function renderizarTabela() {
                                 : valorStr;
                         const clickable =
                             valorStr.length > 50 ? "clickable" : "";
+                        // Armazenar dados da célula para acesso via índice
+                        const celulaIndex = dadosCelulas.length;
+                        dadosCelulas.push({
+                            valor: valorStr,
+                            coluna:
+                                cabecalhos[colIndex] ||
+                                "Coluna " + (colIndex + 1),
+                        });
                         return `<td class="${clickable}" 
-                               onclick="${clickable ? `mostrarDetalhesCelula('${escapeHtml(valorStr).replace(/'/g, "\\'")}', '${escapeHtml(cabecalhos[colIndex] || "Coluna " + (colIndex + 1))}')` : ""}"
+                               ${clickable ? `data-celula-index="${celulaIndex}" onclick="mostrarDetalhesCelulaIndex(${celulaIndex})"` : ""}
                                title="${escapeHtml(valorStr)}">${escapeHtml(valorTruncado)}</td>`;
                     })
                     .join("")}
@@ -458,14 +467,12 @@ function renderizarTabela() {
     html += "</tbody></table>";
     container.innerHTML = html;
 
-    // Atualizar informações de paginação
+    // Atualizar informações
     document.getElementById("filter-count").textContent =
         `${totalRegistros.toLocaleString("pt-BR")} registros`;
-    document.getElementById("pagination-info").textContent =
-        `Mostrando ${inicio + 1} a ${fim} de ${totalRegistros.toLocaleString("pt-BR")} registros`;
 
-    // Renderizar controles de paginação
-    renderizarPaginacao(totalPaginas);
+    // Esconder paginação (mostrando todos)
+    document.getElementById("pagination-container").style.display = "none";
 }
 
 function renderizarPaginacao(totalPaginas) {
@@ -654,6 +661,110 @@ function limparFiltrosColunas() {
 }
 
 // =========================================
+// SELETOR DE COLUNAS
+// =========================================
+
+let colunasTemporarias = [];
+
+function abrirSeletorColunas() {
+    if (!planilhaAtual || !dadosExcel[planilhaAtual]) {
+        mostrarToast("warning", "Atenção", "Selecione uma planilha primeiro.");
+        return;
+    }
+
+    const sheet = dadosExcel[planilhaAtual];
+    const cabecalhos = sheet.cabecalhos;
+
+    // Inicializar colunas visíveis se não existir
+    if (!colunasVisiveis[planilhaAtual]) {
+        colunasVisiveis[planilhaAtual] = cabecalhos.map((_, i) => i);
+    }
+
+    // Cópia temporária para edição
+    colunasTemporarias = [...colunasVisiveis[planilhaAtual]];
+
+    // Renderizar lista de colunas
+    const container = document.getElementById("columns-list");
+    container.innerHTML = cabecalhos
+        .map((col, index) => {
+            const checked = colunasTemporarias.includes(index) ? "checked" : "";
+            const nomeColuna = col || `Coluna ${index + 1}`;
+            return `
+            <label class="column-checkbox">
+                <input type="checkbox" 
+                       value="${index}" 
+                       ${checked}
+                       onchange="toggleColunaTemporaria(${index}, this.checked)">
+                <span class="checkmark"></span>
+                <span class="column-name">${escapeHtml(nomeColuna)}</span>
+            </label>
+        `;
+        })
+        .join("");
+
+    document.getElementById("columns-modal").classList.add("active");
+}
+
+function fecharModalColunas() {
+    document.getElementById("columns-modal").classList.remove("active");
+}
+
+function toggleColunaTemporaria(index, checked) {
+    if (checked) {
+        if (!colunasTemporarias.includes(index)) {
+            colunasTemporarias.push(index);
+            colunasTemporarias.sort((a, b) => a - b);
+        }
+    } else {
+        colunasTemporarias = colunasTemporarias.filter((i) => i !== index);
+    }
+}
+
+function selecionarTodasColunas() {
+    if (!planilhaAtual || !dadosExcel[planilhaAtual]) return;
+
+    const sheet = dadosExcel[planilhaAtual];
+    colunasTemporarias = sheet.cabecalhos.map((_, i) => i);
+
+    // Atualizar checkboxes
+    document
+        .querySelectorAll("#columns-list input[type='checkbox']")
+        .forEach((cb) => {
+            cb.checked = true;
+        });
+}
+
+function deselecionarTodasColunas() {
+    colunasTemporarias = [];
+
+    // Atualizar checkboxes
+    document
+        .querySelectorAll("#columns-list input[type='checkbox']")
+        .forEach((cb) => {
+            cb.checked = false;
+        });
+}
+
+function aplicarSelecaoColunas() {
+    if (colunasTemporarias.length === 0) {
+        mostrarToast("warning", "Atenção", "Selecione pelo menos uma coluna.");
+        return;
+    }
+
+    colunasVisiveis[planilhaAtual] = [...colunasTemporarias];
+    fecharModalColunas();
+    renderizarTabela();
+
+    const total = dadosExcel[planilhaAtual].cabecalhos.length;
+    const visiveis = colunasVisiveis[planilhaAtual].length;
+    mostrarToast(
+        "success",
+        "Colunas atualizadas",
+        `${visiveis} de ${total} colunas visíveis.`,
+    );
+}
+
+// =========================================
 // PESQUISA GLOBAL
 // =========================================
 
@@ -810,6 +921,13 @@ function navegarParaResultado(nomeSheet, linha) {
 // =========================================
 
 let conteudoModalAtual = "";
+
+function mostrarDetalhesCelulaIndex(index) {
+    if (dadosCelulas[index]) {
+        const { valor, coluna } = dadosCelulas[index];
+        mostrarDetalhesCelula(valor, coluna);
+    }
+}
 
 function mostrarDetalhesCelula(valor, coluna) {
     conteudoModalAtual = valor;
