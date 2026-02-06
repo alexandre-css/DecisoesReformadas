@@ -21,10 +21,6 @@ let dadosCelulas = []; // Armazena dados das células para clique
 let configuracoes = {
     tema: "dark",
     corDestaque: "blue",
-    caminhoArquivo:
-        "C:\\Apps\\DecisoesReformadas\\Reformadas TJSC - Resultado Agrupado.xlsx",
-    itensPorPagina: 50,
-    carregarAutomaticamente: true,
 };
 
 // =========================================
@@ -1108,11 +1104,8 @@ function aplicarTema() {
         configuracoes.corDestaque || "blue",
     );
 
-    // Atualizar selects de configuração se existirem
-    const selectTema = document.getElementById("config-theme");
+    // Atualizar select de cor de destaque se existir
     const selectAccent = document.getElementById("config-accent");
-
-    if (selectTema) selectTema.value = configuracoes.tema || "dark";
     if (selectAccent) selectAccent.value = configuracoes.corDestaque || "blue";
 }
 
@@ -1125,34 +1118,13 @@ function carregarConfiguracoes() {
     if (configSalvas) {
         configuracoes = { ...configuracoes, ...JSON.parse(configSalvas) };
     }
-
-    // Aplicar configurações
-    itensPorPagina = configuracoes.itensPorPagina || 50;
-
-    // Atualizar campos de configuração
-    setTimeout(() => {
-        const autoloadCheckbox = document.getElementById("config-autoload");
-        const pageSizeSelect = document.getElementById("config-pagesize");
-
-        if (autoloadCheckbox)
-            autoloadCheckbox.checked = configuracoes.carregarAutomaticamente;
-        if (pageSizeSelect) pageSizeSelect.value = configuracoes.itensPorPagina;
-    }, 100);
 }
 
 function salvarConfiguracoes() {
     // Coletar valores dos campos
-    const selectTema = document.getElementById("config-theme");
     const selectAccent = document.getElementById("config-accent");
-    const selectPageSize = document.getElementById("config-pagesize");
-    const checkboxAutoload = document.getElementById("config-autoload");
 
-    if (selectTema) configuracoes.tema = selectTema.value;
     if (selectAccent) configuracoes.corDestaque = selectAccent.value;
-    if (selectPageSize)
-        configuracoes.itensPorPagina = parseInt(selectPageSize.value);
-    if (checkboxAutoload)
-        configuracoes.carregarAutomaticamente = checkboxAutoload.checked;
 
     // Aplicar tema
     aplicarTema();

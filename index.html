@@ -384,18 +384,6 @@
                             <div class="config-items">
                                 <div class="config-item">
                                     <div class="config-item-info">
-                                        <label>Tema da Interface</label>
-                                        <small>Escolha entre tema claro, escuro ou automático</small>
-                                    </div>
-                                    <select id="config-theme" class="config-select" title="Tema da interface"
-                                        onchange="salvarConfiguracoes()">
-                                        <option value="dark">Escuro</option>
-                                        <option value="light">Claro</option>
-                                        <option value="auto">Automático (sistema)</option>
-                                    </select>
-                                </div>
-                                <div class="config-item">
-                                    <div class="config-item-info">
                                         <label>Cor de Destaque</label>
                                         <small>Cor principal da interface</small>
                                     </div>
@@ -407,49 +395,6 @@
                                         <option value="orange">Laranja</option>
                                         <option value="red">Vermelho</option>
                                     </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Dados -->
-                        <div class="config-section">
-                            <div class="config-section-header">
-                                <span class="material-symbols-outlined">database</span>
-                                <h3>Dados</h3>
-                            </div>
-                            <div class="config-items">
-                                <div class="config-item">
-                                    <div class="config-item-info">
-                                        <label>Caminho do Arquivo</label>
-                                        <small>Localização do arquivo Excel</small>
-                                    </div>
-                                    <input type="text" id="config-filepath" class="config-input"
-                                        title="Caminho do arquivo Excel" placeholder="Caminho do arquivo Excel"
-                                        value="C:\Apps\DecisoesReformadas\Reformadas TJSC - Resultado Agrupado.xlsx"
-                                        readonly>
-                                </div>
-                                <div class="config-item">
-                                    <div class="config-item-info">
-                                        <label>Registros por Página</label>
-                                        <small>Quantidade padrão de linhas nas tabelas</small>
-                                    </div>
-                                    <select id="config-pagesize" class="config-select" title="Registros por página"
-                                        onchange="salvarConfiguracoes()">
-                                        <option value="25">25 registros</option>
-                                        <option value="50" selected>50 registros</option>
-                                        <option value="100">100 registros</option>
-                                    </select>
-                                </div>
-                                <div class="config-item">
-                                    <div class="config-item-info">
-                                        <label>Carregar automaticamente</label>
-                                        <small>Carregar dados ao iniciar a aplicação</small>
-                                    </div>
-                                    <label class="switch">
-                                        <input type="checkbox" id="config-autoload" title="Carregar automaticamente"
-                                            checked onchange="salvarConfiguracoes()">
-                                        <span class="slider"></span>
-                                    </label>
                                 </div>
                             </div>
                         </div>
