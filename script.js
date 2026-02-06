@@ -31,6 +31,8 @@ let configuracoes = {
 // INICIALIZAÇÃO
 // =========================================
 
+const ARQUIVO_XLSX_URL = '/resultadoagrupado.xlsx';
+
 document.addEventListener("DOMContentLoaded", function () {
     carregarConfiguracoes();
     aplicarTema();
@@ -38,12 +40,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // Event listeners para teclas de atalho
     document.addEventListener("keydown", handleKeyboardShortcuts);
 
-    // Mostrar mensagem de boas-vindas
-    mostrarToast(
-        "info",
-        "Bem-vindo!",
-        'Clique em "Atualizar Dados" para carregar o arquivo Excel.',
-    );
+    // Carregar dados automaticamente
+    carregarArquivo();
 });
 
 // =========================================
@@ -76,36 +74,29 @@ function showPage(pagina) {
 // =========================================
 
 async function carregarArquivo() {
-    mostrarLoading("Carregando arquivo Excel...");
+    mostrarLoading("Carregando dados do servidor...");
 
     try {
-        // Criar input file oculto para seleção do arquivo
-        const input = document.createElement("input");
-        input.type = "file";
-        input.accept = ".xlsx,.xls";
-
-        input.onchange = async (e) => {
-            const arquivo = e.target.files[0];
-            if (arquivo) {
-                await processarArquivoExcel(arquivo);
-            } else {
-                esconderLoading();
-            }
-        };
-
-        input.click();
+        const response = await fetch(ARQUIVO_XLSX_URL);
+        
+        if (!response.ok) {
+            throw new Error(`Erro ao carregar arquivo: ${response.status}`);
+        }
+        
+        const dados = await response.arrayBuffer();
+        await processarDadosExcel(dados);
+        
     } catch (erro) {
         console.error("Erro ao carregar arquivo:", erro);
-        mostrarToast("error", "Erro", "Não foi possível carregar o arquivo.");
+        mostrarToast("error", "Erro", "Não foi possível carregar os dados do servidor.");
         esconderLoading();
     }
 }
 
-async function processarArquivoExcel(arquivo) {
+async function processarDadosExcel(dados) {
     mostrarLoading("Processando planilhas...");
 
     try {
-        const dados = await arquivo.arrayBuffer();
         const workbook = XLSX.read(dados, { type: "array", cellStyles: true });
 
         dadosExcel = {};
