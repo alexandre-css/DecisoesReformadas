@@ -376,9 +376,12 @@ function renderizarTabela() {
     const sheet = dadosExcel[planilhaAtual];
     const cabecalhos = sheet.cabecalhos;
 
-    // Inicializar colunas visíveis (todas visíveis por padrão)
+    // Inicializar colunas visíveis (ocultar link_decisao por padrão)
     if (!colunasVisiveis[planilhaAtual]) {
-        colunasVisiveis[planilhaAtual] = cabecalhos.map((_, i) => i);
+        colunasVisiveis[planilhaAtual] = cabecalhos
+            .map((col, i) => ({ col: col?.toLowerCase(), index: i }))
+            .filter(item => item.col !== "link_decisao")
+            .map(item => item.index);
     }
     const cabecalhosVisiveis = colunasVisiveis[planilhaAtual];
 
@@ -440,11 +443,29 @@ function renderizarTabela() {
                     .map((colIndex) => {
                         const valor =
                             row[colIndex] !== undefined ? row[colIndex] : "";
-                        const valorStr = String(valor);
+                        let valorStr = String(valor);
+                        const nomeColuna = (cabecalhos[colIndex] || "").toLowerCase();
+
+                        // Formatação especial para coluna data_decisao
+                        let valorExibicao = valorStr;
+                        if (nomeColuna === "data_decisao") {
+                            valorExibicao = extrairData(valorStr);
+                        }
+                        
+                        // Coluna link_pdf_download: abre link diretamente
+                        if (nomeColuna === "link_pdf_download" && valorStr.trim()) {
+                            return `<td class="link-cell" 
+                                   onclick="abrirLink('${escapeHtml(valorStr.trim()).replace(/'/g, "\\'")}')" 
+                                   title="Clique para abrir o PDF">
+                                   <span class="material-symbols-outlined">open_in_new</span>
+                                   Abrir PDF
+                               </td>`;
+                        }
+
                         const valorTruncado =
-                            valorStr.length > 100
-                                ? valorStr.substring(0, 100) + "..."
-                                : valorStr;
+                            valorExibicao.length > 100
+                                ? valorExibicao.substring(0, 100) + "..."
+                                : valorExibicao;
                         const clickable =
                             valorStr.length > 50 ? "clickable" : "";
                         // Armazenar dados da célula para acesso via índice
@@ -929,6 +950,18 @@ function mostrarDetalhesCelulaIndex(index) {
     }
 }
 
+function abrirLink(url) {
+    if (!url) return;
+    
+    // Adiciona protocolo se não existir
+    let urlFinal = url.trim();
+    if (!urlFinal.startsWith('http://') && !urlFinal.startsWith('https://')) {
+        urlFinal = 'https://' + urlFinal;
+    }
+    
+    window.open(urlFinal, '_blank', 'noopener,noreferrer');
+}
+
 function mostrarDetalhesCelula(valor, coluna) {
     conteudoModalAtual = valor;
     document.getElementById("modal-title").textContent = coluna;
@@ -1140,6 +1173,34 @@ function escapeHtml(texto) {
     const div = document.createElement("div");
     div.textContent = texto;
     return div.innerHTML;
+}
+
+function extrairData(texto) {
+    // Extrai apenas a data de strings como:
+    // "2023/0046924-0 de 25/02/2025" -> "25/02/2025"
+    // "2025/0020542-7 - 24/04/2025" -> "24/04/2025"
+    // Se já for uma data pura, retorna ela mesma
+    if (!texto) return texto;
+
+    // Regex para encontrar data no formato DD/MM/YYYY
+    const regexData = /(\d{2}\/\d{2}\/\d{4})/;
+    const match = texto.match(regexData);
+
+    if (match) {
+        return match[1];
+    }
+
+    // Tenta formato YYYY-MM-DD
+    const regexDataISO = /(\d{4}-\d{2}-\d{2})/;
+    const matchISO = texto.match(regexDataISO);
+
+    if (matchISO) {
+        // Converte de YYYY-MM-DD para DD/MM/YYYY
+        const [ano, mes, dia] = matchISO[1].split("-");
+        return `${dia}/${mes}/${ano}`;
+    }
+
+    return texto;
 }
 
 function escapeRegex(string) {
