@@ -13,5 +13,8 @@ Thumbs.db
 *.xlsx
 *.xls
 
+# Exceção: arquivo de dados da aplicação
+!resultadoagrupado.xlsx
+
 # Logs
 *.log
